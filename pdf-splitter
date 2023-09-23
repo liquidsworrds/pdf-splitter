@@ -1,0 +1,62 @@
+#!/bin/bash
+
+set -e 
+set -o nounset
+
+[ $# -eq 0 ] && { echo "Usage: $0 -f [FIRSTPAGE] -l [LASTPAGE] -i [INPUTFILE] -o [OUTPUTFILE]"; exit 1; }
+
+while [[ "$#" -gt 0 ]]; 
+do
+    case $1 in 
+        -f|--first) 
+            FIRSTPAGE="$2"
+            shift
+            shift
+            ;;
+        -l|--last)
+            LASTPAGE="$2"
+            shift 
+            shift
+            ;;
+        -i|--input)
+            INPUTFILE="$2"
+            shift
+            shift
+            ;;
+        -o|--output)
+            OUTPUTFILE="$2"
+            shift
+            shift
+            ;;
+        -h | --help)
+            echo "Usage: $0 -f [FIRSTPAGE] -l [LASTPAGE] -i [INPUTFILE] -o [OUTPUTFILE]"
+            exit 1
+            ;;
+        -*) 
+            echo "$0: Unknown option: $1"
+            echo "Usage: $0 -f [FIRSTPAGE] -l [LASTPAGE] -i [INPUTFILE] -o [OUTPUTFILE]"
+            exit 1
+            ;;
+        *)
+            echo "$0: Unknown option: $1"
+            echo "Usage: $0 -f [FIRSTPAGE] -l [LASTPAGE] -i [INPUTFILE] -o [OUTPUTFILE]"
+            exit 1
+            ;;
+    esac
+done
+
+INPUTFILE_WO_EXTENSION=${INPUTFILE%.*}
+DIRECTORY=/tmp/"$INPUTFILE_WO_EXTENSION"_"$RANDOM"
+
+pushd . >/dev/null || exit
+mkdir "$DIRECTORY" >&2 || exit
+pdfseparate -f "$FIRSTPAGE" -l "$LASTPAGE" "$INPUTFILE" "$DIRECTORY"/%d.pdf
+cd "$DIRECTORY" || exit
+pdfunite $(ls | sort -n) "$OUTPUTFILE"
+popd >/dev/null || exit
+
+mv "$DIRECTORY"/"$OUTPUTFILE" .
+
+if [ -d "$DIRECTORY" ]; then
+    rm -r "$DIRECTORY"
+fi
