@@ -3,5 +3,5 @@
 ## Usage
 
 ```bash
-    ./pdf-splitter -f [FIRSTPAGE] -l [LASTPAGE] -i [INPUTFILE] -o [OUTPUTFILE]
+./pdf-splitter -f [FIRSTPAGE] -l [LASTPAGE] -i [INPUTFILE] -o [OUTPUTFILE]
 ```
